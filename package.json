@@ -24,6 +24,7 @@
   "license": "MIT",
   "dependencies": {
     "data2xml": "^1.2.5",
+    "express": "^4.16.4",
     "faker": "^4.1.0",
     "moment": "^2.24.0",
     "node-uuid": "1.4.3",

@@ -30,8 +30,8 @@ module.exports = {
    *
    * @param callback(err, requestArray)
    */
-  fetchRequests: function(callback) {
-    buildRequests(callback);
+  fetchRequests: function(username, callback) {
+    buildRequests(username, callback);
   },
 
   /**
@@ -41,7 +41,7 @@ module.exports = {
    * @param response - qbXML response
    */
   handleResponse: function(response) {
-    console.log(response);
+    // console.log(response);
     dumpFile("response", response);
   },
 
@@ -57,6 +57,7 @@ module.exports = {
 };
 const faker = require("faker");
 const moment = require("moment");
+const userMap = require("./lib/userMap");
 
 const getAddress = () => {
   if (Math.random() >= 0.5) {
@@ -83,22 +84,22 @@ const LINE_ITEMS = [
 ];
 
 let customerNames = [];
-let getRandomName = () => {
-  if (customerNames.length < CUSTOMER_LENGTH - 1) {
+let getRandomName = count => {
+  if (customerNames.length < count - 1) {
     console.log("filling customer names");
     customerNames = [];
-    for (let i = 0; i < CUSTOMER_LENGTH; i++) {
+    for (let i = 0; i < count; i++) {
       customerNames.push(faker.name.firstName() + " " + faker.name.lastName());
     }
   }
   return customerNames[Math.floor(Math.random() * customerNames.length)];
 };
 
-let generateCustomers = function() {
+let generateCustomers = function(count) {
   let customers = { CustomerAddRq: [] };
 
-  for (let i = 0; i < CUSTOMER_LENGTH; i++) {
-    let customerName = getRandomName();
+  for (let i = 0; i < count; i++) {
+    let customerName = getRandomName(count);
     let splitName = customerName.split(" ");
     let firstName = splitName[0];
     let lastName = splitName[1];
@@ -114,8 +115,7 @@ let generateCustomers = function() {
       }
     });
   }
-  console.dir(customers);
-
+  console.log(`FILLING ${customers.CustomerAddRq.length} CUSTOMERS`);
   return customers;
 };
 
@@ -125,12 +125,12 @@ let getRandomInt = max => {
   return Math.floor(Math.random() * (max - min)) + min;
 };
 
-let generateInvoices = function() {
+let generateInvoices = function(count) {
   let invoices = {
     InvoiceAddRq: []
   };
 
-  for (let i = 0; i < CUSTOMER_LENGTH; i++) {
+  for (let i = 0; i < count; i++) {
     let FullName = getRandomName();
     let invoicesPerCustomer = getRandomInt(3);
 
@@ -166,17 +166,17 @@ let generateInvoices = function() {
     }
   }
 
-  // strapi.log.info("%j", invoices.InvoiceAddRq);
+  console.log(`FILLING ${invoices.InvoiceAddRq.length} INVOICES`);
 
   return invoices;
 };
 
-let generateEstimates = function() {
+let generateEstimates = function(count) {
   let estimates = {
     EstimateAddRq: []
   };
 
-  for (let i = 0; i < CUSTOMER_LENGTH; i++) {
+  for (let i = 0; i < count; i++) {
     let FullName = getRandomName();
     let estimatesPerCustomer = getRandomInt(3);
 
@@ -233,16 +233,18 @@ let generateServiceItems = () => {
   return query;
 };
 
-function buildRequests(callback) {
+function buildRequests(username, callback) {
   try {
+    console.log(userMap, username);
+    var count = userMap[username] || CUSTOMER_LENGTH;
     var requests = new Array();
     var xml = convert("QBXML", {
       QBXMLMsgsRq: {
         _attr: { onError: "continueOnError" },
-        ItemServiceAddRq: generateServiceItems(),
-        EstimateAddRq: generateEstimates().EstimateAddRq,
-        CustomerAddRq: generateCustomers().CustomerAddRq,
-        InvoiceAddRq: generateInvoices().InvoiceAddRq
+        ItemServiceAddRq: generateServiceItems(count),
+        EstimateAddRq: generateEstimates(count).EstimateAddRq,
+        CustomerAddRq: generateCustomers(count).CustomerAddRq,
+        InvoiceAddRq: generateInvoices(count).InvoiceAddRq
       }
     });
     requests.push(xml);
