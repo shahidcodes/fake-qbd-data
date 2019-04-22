@@ -11,4 +11,8 @@
  * file that was distributed with this source code.
  */
 
-module.exports = require('./lib/server');
+var QuickbooksServer = require("./lib/server");
+var quickbooksServer = new QuickbooksServer();
+var qbXMLHandler = require("./qbXMLHandler.js");
+quickbooksServer.setQBXMLHandler(qbXMLHandler);
+quickbooksServer.run();

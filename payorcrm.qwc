@@ -1,0 +1,17 @@
+<?xml version="1.0"?>
+        <QBWCXML>
+            <AppName>PayorCRM Faker Data</AppName>
+            <CertURL>https://mayday.payorcrm.com/demo.html</CertURL>
+            <AppID></AppID>
+            <AppDescription>A self servicing invoicing portal.</AppDescription>
+            <AppURL>http://localhost:8000/wsdl</AppURL>
+            <AppSupport>https://help.payorcrm.com/connecting-to-qb-desktoponline.html</AppSupport>
+            <UserName>st2_test</UserName>
+            <OwnerID>{c99bd911-9e1b-46c3-a6d3-e52e4ba4d456}</OwnerID>
+            <FileID>{6231bd2f-72a9-46a6-8cf0-49a7525bd9de}</FileID>
+            <QBType>QBFS</QBType>
+            <Scheduler>
+                <RunEveryNMinutes>80</RunEveryNMinutes>
+            </Scheduler>
+            <IsReadOnly>false</IsReadOnly>
+        </QBWCXML>
