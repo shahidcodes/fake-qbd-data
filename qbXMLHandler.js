@@ -85,21 +85,17 @@ const LINE_ITEMS = [
 
 let customerNames = [];
 let getRandomName = count => {
-  if (customerNames.length < count - 1) {
-    console.log("filling customer names");
-    customerNames = [];
-    for (let i = 0; i < count; i++) {
-      customerNames.push(faker.name.firstName() + " " + faker.name.lastName());
-    }
+  customerNames = [];
+  for (let i = 0; i < count; i++) {
+    customerNames.push(faker.name.firstName() + " " + faker.name.lastName());
   }
-  return customerNames[Math.floor(Math.random() * customerNames.length)];
+  console.log("generated customer", count, customerNames.length);
 };
 
 let generateCustomers = function(count) {
   let customers = { CustomerAddRq: [] };
-
   for (let i = 0; i < count; i++) {
-    let customerName = getRandomName(count);
+    let customerName = customerNames[i];
     let splitName = customerName.split(" ");
     let firstName = splitName[0];
     let lastName = splitName[1];
@@ -131,8 +127,8 @@ let generateInvoices = function(count) {
   };
 
   for (let i = 0; i < count; i++) {
-    let FullName = getRandomName();
-    let invoicesPerCustomer = getRandomInt(3);
+    let FullName = customerNames[i];
+    let invoicesPerCustomer = getRandomInt(10);
 
     for (let j = 0; j < invoicesPerCustomer; j++) {
       let invoice = {
@@ -177,15 +173,15 @@ let generateEstimates = function(count) {
   };
 
   for (let i = 0; i < count; i++) {
-    let FullName = getRandomName();
-    let estimatesPerCustomer = getRandomInt(3);
-
+    let FullName = customerNames[i];    
+    let estimatesPerCustomer = getRandomInt(10);
     for (let j = 0; j < estimatesPerCustomer; j++) {
       let estimate = {
         CustomerRef: {
           FullName
         },
-        TxnDate: moment(faker.date.between("2018-01-01")).format("YYYY-MM-DD"),
+        TxnDate: moment(faker.date.between("2018-01-01", "2018-06-05"))
+          .format("YYYY-MM-DD"),
         RefNumber: faker.random.number(),
         BillAddress: getAddress(),
         ShipAddress: getAddress(),
@@ -237,13 +233,14 @@ function buildRequests(username, callback) {
   try {
     console.log(userMap, username);
     var count = userMap[username] || CUSTOMER_LENGTH;
+    getRandomName(count);
     var requests = new Array();
     var xml = convert("QBXML", {
       QBXMLMsgsRq: {
         _attr: { onError: "continueOnError" },
         ItemServiceAddRq: generateServiceItems(count),
-        EstimateAddRq: generateEstimates(count).EstimateAddRq,
         CustomerAddRq: generateCustomers(count).CustomerAddRq,
+        EstimateAddRq: generateEstimates(count).EstimateAddRq,
         InvoiceAddRq: generateInvoices(count).InvoiceAddRq
       }
     });

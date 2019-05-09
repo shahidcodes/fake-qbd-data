@@ -4,22 +4,47 @@
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <meta http-equiv="X-UA-Compatible" content="ie=edge" />
-    <title>Document</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/materialize/1.0.0/css/materialize.min.css">
+    <title>Faker QBD</title>
   </head>
   <body>
-    <input type="text" placeholder="username" id="username" /> <br />
-    <input type="number" placeholder="customer count" id="count" /> <br />
-    <button onClick="downloadQWC()">Download QWC</button>
-  </body>
-  <script>
-    var usernameInput = document.getElementById("username");
-    var countInput = document.getElementById("count");
-    function downloadQWC() {
-      console.log("ok");
-      if (usernameInput.value === "" || countInput.value == "") {
-        return alert("empty values");
+    <div class="container">
+      <h3 class="center">
+        Fake Quickbooks Desktop Data
+      </h3>
+      <div class="row">
+        <div class="input-field col s12 m6 offset-m3">
+          <input id="username" type="text" class="validate">
+          <label class="active" for="username">Username</label>
+        </div>
+      </div>
+      <div class="row">
+        <div class="input-field col s12 m6 m6 offset-m3">
+          <input id="count" type="text" class="validate">
+          <label class="active" for="count">Customer Count</label>
+        </div>
+      </div>
+      <div class="row">
+        <div class="input-field col s12 center">
+          <button onclick="downloadQWC()" class="green waves-effect waves-light btn">Download QWC</button>
+        </div>
+        <div class="col s12 center">
+          <a href="https://twitter.com/shahidcodes?ref_src=twsrc%5Etfw" class="twitter-follow-button" data-show-count="false">Follow @shahidcodes</a><script async src="https://platform.twitter.com/widgets.js" charset="utf-8"></script>
+        </div>
+      </div>
+      
+    </div>
+    </body>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/materialize/1.0.0/js/materialize.min.js"></script>
+    <script>
+      var usernameInput = document.getElementById("username");
+      var countInput = document.getElementById("count");
+      function downloadQWC() {
+        console.log("ok");
+        if (usernameInput.value === "" || countInput.value == "") {
+          return alert("empty values");
+        }
+        window.location = `/set/${usernameInput.value}/${countInput.value}`;
       }
-      window.location = `/set/${usernameInput.value}/${countInput.value}`;
-    }
-  </script>
+    </script>
 </html>
