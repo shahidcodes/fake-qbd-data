@@ -1,16 +1,3 @@
-/*
- * This file is part of quickbooks-js
- * https://github.com/RappidDevelopment/quickbooks-js
- *
- * Based on qbws: https://github.com/johnballantyne/qbws
- *
- * (c) 2015 johnballantyne
- * (c) 2016 Rappid Development LLC
- *
- * For the full copyright and license information, please view the LICENSE
- * file that was distributed with this source code.
- */
-
 var data2xml = require("data2xml");
 var convert = data2xml({
   xmlHeader:
@@ -18,9 +5,7 @@ var convert = data2xml({
 });
 const fs = require("fs");
 let dumpFile = (name, data) => {
-  fs.writeFile(name + ".json", JSON.stringify(data), data =>
-    console.log("dumped")
-  );
+  fs.writeFile(name, data, () => console.log("dumped"));
 };
 // Public
 module.exports = {
@@ -42,7 +27,7 @@ module.exports = {
    */
   handleResponse: function(response) {
     // console.log(response);
-    dumpFile("response", response);
+    dumpFile("response.xml", response);
   },
 
   /**
@@ -111,7 +96,7 @@ let generateCustomers = function(count) {
       }
     });
   }
-  console.log(`FILLING ${customers.CustomerAddRq.length} CUSTOMERS`);
+  console.log(`GENERATED ${customers.CustomerAddRq.length} CUSTOMERS`);
   return customers;
 };
 
@@ -125,7 +110,7 @@ let generateInvoices = function(count) {
   let invoices = {
     InvoiceAddRq: []
   };
-
+  console.log("GENERATING INVOICE");
   for (let i = 0; i < count; i++) {
     let FullName = customerNames[i];
     let invoicesPerCustomer = getRandomInt(10);
@@ -162,7 +147,7 @@ let generateInvoices = function(count) {
     }
   }
 
-  console.log(`FILLING ${invoices.InvoiceAddRq.length} INVOICES`);
+  console.log(`GENERATED ${invoices.InvoiceAddRq.length} INVOICES`);
 
   return invoices;
 };
@@ -171,17 +156,18 @@ let generateEstimates = function(count) {
   let estimates = {
     EstimateAddRq: []
   };
-
+  console.log("GENERATING ESTIMATES");
   for (let i = 0; i < count; i++) {
-    let FullName = customerNames[i];    
-    let estimatesPerCustomer = getRandomInt(10);
+    let FullName = customerNames[i];
+    let estimatesPerCustomer = getRandomInt(2);
     for (let j = 0; j < estimatesPerCustomer; j++) {
       let estimate = {
         CustomerRef: {
           FullName
         },
-        TxnDate: moment(faker.date.between("2018-01-01", "2018-06-05"))
-          .format("YYYY-MM-DD"),
+        TxnDate: moment(faker.date.between("2018-01-01", "2018-06-05")).format(
+          "YYYY-MM-DD"
+        ),
         RefNumber: faker.random.number(),
         BillAddress: getAddress(),
         ShipAddress: getAddress(),
@@ -190,7 +176,7 @@ let generateEstimates = function(count) {
 
       let lineItems = faker.helpers.shuffle(LINE_ITEMS);
 
-      let lineItemCount = getRandomInt(6);
+      let lineItemCount = getRandomInt(3);
       for (let i = 0; i < lineItemCount; i++) {
         let lineItemName = lineItems.pop();
         estimate.EstimateLineAdd.push({
@@ -206,6 +192,7 @@ let generateEstimates = function(count) {
       estimates.EstimateAddRq.push({ EstimateAdd: estimate });
     }
   }
+  console.log(`GENERATED ${estimates.EstimateAddRq.length} ESTIMATES`);
   return estimates;
 };
 
@@ -219,7 +206,7 @@ let generateServiceItems = () => {
           Desc: "Description of line item " + item,
           Price: 100.0,
           AccountRef: {
-            FullName: "Consulting Income"
+            FullName: "Faker"
           }
         }
       }
@@ -240,12 +227,12 @@ function buildRequests(username, callback) {
         _attr: { onError: "continueOnError" },
         ItemServiceAddRq: generateServiceItems(count),
         CustomerAddRq: generateCustomers(count).CustomerAddRq,
-        EstimateAddRq: generateEstimates(count).EstimateAddRq,
-        InvoiceAddRq: generateInvoices(count).InvoiceAddRq
+        InvoiceAddRq: generateInvoices(count).InvoiceAddRq,
+        EstimateAddRq: generateEstimates(count).EstimateAddRq
       }
     });
     requests.push(xml);
-
+    console.log("REQUEST QUEUE READY");
     return callback(null, requests);
   } catch (err) {
     return callback(err, null);
